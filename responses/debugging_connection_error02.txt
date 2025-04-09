@@ -1,0 +1,79 @@
+The error message you're seeing indicates that the script is unable to resolve the hostname `api.mistralai.com`. This typically means that the DNS resolution for the specified hostname is failing, which prevents the script from making the HTTP request.
+
+Here are some steps to troubleshoot and resolve this issue:
+
+### 1. Verify the Hostname
+Ensure that the hostname `api.mistralai.com` is correct and that the API endpoint is publicly accessible. You can try accessing the hostname via a web browser or using a tool like `curl` to see if it resolves:
+
+```sh
+curl -I https://api.mistralai.com
+```
+
+### 2. Check DNS Configuration
+Make sure your DNS server is configured correctly. You can try changing your DNS server to a public one like Google (8.8.8.8) or Cloudflare (1.1.1.1) and see if that resolves the issue.
+
+### 3. Network Configuration
+Ensure that there are no firewall or proxy settings blocking the request. You can test this by trying to resolve the hostname from another network or device.
+
+### 4. Python Code Review
+Ensure that the Python script is correctly configured to make the request. Here is a simple example of how you might set up the request using the `requests` library:
+
+```python
+import requests
+
+url = "https://api.mistralai.com/v1/generate"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+data = {
+    "prompt": "Your prompt here"
+}
+
+try:
+    response = requests.post(url, headers=headers, json=data)
+    response.raise_for_status()  # Raise an exception for HTTP errors
+    print(response.json())
+except requests.exceptions.RequestException as e:
+    print(f"Error: {e}")
+```
+
+### 5. Check for Typos
+Ensure there are no typos in the hostname or URL.
+
+### 6. API Documentation
+Consult the API documentation for `api.mistralai.com` to ensure you are using the correct endpoint and that the service is currently available.
+
+### 7. Logging and Debugging
+Add more logging to your script to capture additional details about the error:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+import requests
+
+url = "https://api.mistralai.com/v1/generate"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+data = {
+    "prompt": "Your prompt here"
+}
+
+try:
+    response = requests.post(url, headers=headers, json=data)
+    response.raise_for_status()  # Raise an exception for HTTP errors
+    logger.debug(f"Response: {response.json()}")
+except requests.exceptions.RequestException as e:
+    logger.error(f"Error: {e}")
+```
+
+### 8. Check API Status
+Sometimes, the API service itself might be down. Check the status page of the API provider, if available, or contact their support.
+
+By following these steps, you should be able to identify and resolve the issue preventing your script from connecting to `api.mistralai.com`.
+

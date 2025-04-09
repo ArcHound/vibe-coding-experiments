@@ -1,0 +1,1 @@
+please generate a python click script for calling mistral ai, all cli arguments should be the input and the output should be prompt response to that specified prompt use api key from MISTRAL_AI_KEY environment variable, the url should be "https://api.mistral.ai/v1/chat/completions"

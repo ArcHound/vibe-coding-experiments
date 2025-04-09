@@ -1,0 +1,64 @@
+The error you are encountering, `urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.mistralai.com', port=443): Max retries exceeded with url: /v1/generate (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7fd129499be0>: Failed to resolve 'api.mistralai.com' ([Errno -2] Name or service not known)"))`, indicates that your script is unable to resolve the domain name `api.mistralai.com`. This typically suggests a DNS resolution issue.
+
+Here are some steps you can take to troubleshoot and resolve this issue:
+
+1. **Check Internet Connection**:
+   Ensure that your machine is connected to the internet. You can try accessing other websites to confirm connectivity.
+
+2. **Check DNS Resolution**:
+   Verify that your DNS settings are correct. You can try resolving the domain name using a command-line tool such as `nslookup` or `dig`.
+   ```sh
+   nslookup api.mistralai.com
+   ```
+   or
+   ```sh
+   dig api.mistralai.com
+   ```
+   If these commands fail, it indicates a DNS resolution problem.
+
+3. **Check Hosts File**:
+   Ensure that there are no incorrect entries in your `/etc/hosts` file (on Unix-based systems) or `C:\Windows\System32\drivers\etc\hosts` file (on Windows) that might be causing the issue.
+
+4. **Check Proxy Settings**:
+   If you are behind a proxy, ensure that your proxy settings are correctly configured. You might need to set up the proxy in your Python script using the `requests` library.
+   ```python
+   import requests
+
+   proxies = {
+       "http": "http://proxy_url:proxy_port",
+       "https": "http://proxy_url:proxy_port",
+   }
+
+   response = requests.get("https://api.mistralai.com/v1/generate", proxies=proxies)
+   ```
+
+5. **Try a Different DNS Server**:
+   You can try using a different DNS server, such as Google's public DNS (8.8.8.8 and 8.8.4.4) or Cloudflare's DNS (1.1.1.1). You can configure this in your network settings.
+
+6. **Check API Endpoint**:
+   Ensure that the API endpoint `https://api.mistralai.com/v1/generate` is correct and the service is up and running. You can check the status of the API by visiting the endpoint in a web browser or using `curl`.
+   ```sh
+   curl -I https://api.mistralai.com/v1/generate
+   ```
+
+7. **Retry Logic**:
+   Implement retry logic in your script to handle transient network issues. The `requests` library has built-in support for retries.
+   ```python
+   from requests.adapters import HTTPAdapter
+   from requests.packages.urllib3.util.retry import Retry
+
+   session = requests.Session()
+   retry = Retry(
+       total=5,
+       backoff_factor=1,
+       status_forcelist=[500, 502, 503, 504],
+       method_whitelist=["HEAD", "GET", "OPTIONS"]
+   )
+   adapter = HTTPAdapter(max_retries=retry)
+   session.mount("http://", adapter)
+   session.mount("https://", adapter)
+
+   response = session.get("https://api.mistralai.com/v1/generate")
+   ```
+
+By following these steps, you should be able to identify and resolve the DNS resolution issue causing the error in your Python script.

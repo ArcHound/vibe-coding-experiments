@@ -1,0 +1,6 @@
+click
+python-dotenv
+pandas
+tqdm
+requests
+mistralai
