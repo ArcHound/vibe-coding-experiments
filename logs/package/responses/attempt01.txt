@@ -1,0 +1,163 @@
+Creating a Python package from the provided script involves several steps. Here's a step-by-step guide to package your script as an installable Python package using `setuptools`.
+
+1. **Create the Project Directory Structure**:
+   ```
+   mistral_ai/
+   ├── mistral_ai/
+   │   ├── __init__.py
+   │   └── main.py
+   ├── tests/
+   │   └── test_main.py
+   ├── setup.py
+   ├── README.md
+   └── requirements.txt
+   ```
+
+2. **Move the Script to `mistral_ai/main.py`**:
+   ```python
+   # mistral_ai/main.py
+
+   import os
+   import click
+   import requests
+   import json
+
+   @click.command()
+   @click.argument('prompt', nargs=-1)
+   def call_mistral_ai(prompt):
+       """Call the Mistral AI API with the given prompt."""
+       api_key = os.getenv('MISTRAL_AI_KEY')
+       if not api_key:
+           raise click.ClickException('MISTRAL_AI_KEY environment variable not set')
+
+       # Join the prompt list into a single string
+       prompt = ' '.join(prompt)
+
+       url = 'https://api.mistral.ai/v1/chat/completions'
+       headers = {
+           'Authorization': f'Bearer {api_key}',
+           'Content-Type': 'application/json'
+       }
+       data = {
+           'model': 'mistral-small-latest',  # Replace with the actual model name if different
+           'messages': [{'role': 'user', 'content': prompt}]
+           # Add any other parameters required by the API here
+       }
+
+       response = requests.post(url, headers=headers, data=json.dumps(data))
+
+       if response.status_code == 200:
+           response_json = response.json()
+           # Adjust the following line based on the actual structure of the API response
+           click.echo(response_json['choices'][0]['message']['content'])
+       else:
+           raise click.ClickException(f'Error: {response.status_code} - {response.text}')
+
+   if __name__ == '__main__':
+       call_mistral_ai()
+   ```
+
+3. **Create `mistral_ai/__init__.py`**:
+   ```python
+   # mistral_ai/__init__.py
+
+   from .main import call_mistral_ai
+   ```
+
+4. **Create `setup.py`**:
+   ```python
+   # setup.py
+
+   from setuptools import setup, find_packages
+
+   setup(
+       name='mistral_ai',
+       version='0.1.0',
+       packages=find_packages(),
+       include_package_data=True,
+       install_requires=[
+           'click',
+           'requests',
+       ],
+       entry_points={
+           'console_scripts': [
+               'mistral_ai=mistral_ai.main:call_mistral_ai',
+           ],
+       },
+       author='Your Name',
+       author_email='your.email@example.com',
+       description='A CLI tool to call the Mistral AI API',
+       long_description=open('README.md').read(),
+       long_description_content_type='text/markdown',
+       url='https://github.com/yourusername/mistral_ai',  # Replace with your actual URL
+       classifiers=[
+           'Programming Language :: Python :: 3',
+           'License :: OSI Approved :: MIT License',
+           'Operating System :: OS Independent',
+       ],
+       python_requires='>=3.6',
+   )
+   ```
+
+5. **Create `requirements.txt`**:
+   ```
+   click
+   requests
+   ```
+
+6. **Create `README.md`**:
+   ```markdown
+   # Mistral AI CLI
+
+   A CLI tool to call the Mistral AI API.
+
+   ## Installation
+
+   ```bash
+   pip install mistral_ai
+   ```
+
+   ## Usage
+
+   ```bash
+   export MISTRAL_AI_KEY='your_api_key'
+   mistral_ai "Your prompt here"
+   ```
+   ```
+
+7. **Create a Test File (Optional)**:
+   ```python
+   # tests/test_main.py
+
+   import unittest
+   from unittest.mock import patch
+   from mistral_ai.main import call_mistral_ai
+
+   class TestMistralAI(unittest.TestCase):
+       @patch('mistral_ai.main.requests.post')
+       def test_call_mistral_ai(self, mock_post):
+           mock_post.return_value.status_code = 200
+           mock_post.return_value.json.return_value = {
+               'choices': [{'message': {'content': 'Mock response'}}]
+           }
+           with self.assertRaises(SystemExit) as cm:
+               call_mistral_ai(['Hello', 'world'])
+           self.assertEqual(cm.exception.code, 0)
+
+   if __name__ == '__main__':
+       unittest.main()
+   ```
+
+8. **Build and Install the Package**:
+   ```bash
+   python setup.py sdist bdist_wheel
+   pip install .
+   ```
+
+9. **Test the Installation**:
+   ```bash
+   mistral_ai "Your prompt here"
+   ```
+
+This setup will allow you to install and use your `mistral_ai` package via `pip`. Make sure to replace placeholders like `Your Name`, `your.email@example.com`, and the GitHub URL with your actual information.
+

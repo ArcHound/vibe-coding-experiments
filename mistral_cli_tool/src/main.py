@@ -35,6 +35,7 @@ log_levels = {
 }
 
 api_key = os.environ["MISTRAL_AI_KEY"]
+model = "codestral-latest"
 
 client = Mistral(api_key=api_key)
 
@@ -69,9 +70,8 @@ def time_decorator(f):
     return update_wrapper(new_func, f)
 
 
-@click.command(context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+@click.command()
 @click.argument('prompt', nargs=-1)
-@click.option('--model', default="mistral-large-latest")
 @click.option(
     "--input-file",
     help="Input file [default: STDIN]",
@@ -90,7 +90,6 @@ def time_decorator(f):
 @time_decorator
 def main(
         prompt,
-        model,
         input_file,
         log_level):
     """Console script for hey_ai."""

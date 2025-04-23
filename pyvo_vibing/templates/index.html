@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+
+      <body>
+          <section class="section">
+              <div class="container">
+                  <h1 class="title">Todo List</h1>
+                  <form action="/add" method="post" class="field has-addons">
+                      <div class="control is-expanded">
+                          <input type="text" name="todo" class="input" placeholder="Add a new todo">
+                      </div>
+                      <div class="control">
+                          <button type="submit" class="button is-primary">Add</button>
+                      </div>
+                  </form>
+                  <ul>
+                      {% for todo in todos %}
+                      <li class="box">{{ todo.task }} <a href="/delete/{{ todo.id }}" class="button is-danger is-small">Delete</a></li>
+                      {% endfor %}
+                  </ul>
+              </div>
+          </section>
+      </body>
+</html>
+      

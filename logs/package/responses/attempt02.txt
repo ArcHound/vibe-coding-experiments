@@ -1,0 +1,135 @@
+To create a Python package from the provided script that can be installed using `pip`, you need to structure your project directory appropriately and include a `pyproject.toml` file. Below is a step-by-step guide to achieve this:
+
+1. **Project Structure**:
+   ```
+   mistral_ai/
+   ├── mistral_ai/
+   │   ├── __init__.py
+   │   └── main.py
+   ├── tests/
+   │   └── test_main.py
+   ├── pyproject.toml
+   └── README.md
+   ```
+
+2. **Content of `mistral_ai/main.py`**:
+   ```python
+   import os
+   import click
+   import requests
+   import json
+
+   @click.command()
+   @click.argument('prompt', nargs=-1)
+   def call_mistral_ai(prompt):
+       """Call the Mistral AI API with the given prompt."""
+       api_key = os.getenv('MISTRAL_AI_KEY')
+       if not api_key:
+           raise click.ClickException('MISTRAL_AI_KEY environment variable not set')
+
+       # Join the prompt list into a single string
+       prompt = ' '.join(prompt)
+
+       url = 'https://api.mistral.ai/v1/chat/completions'
+       headers = {
+           'Authorization': f'Bearer {api_key}',
+           'Content-Type': 'application/json'
+       }
+       data = {
+           'model': 'mistral-small-latest',  # Replace with the actual model name if different
+           'messages': [{'role': 'user', 'content': prompt}]
+           # Add any other parameters required by the API here
+       }
+
+       response = requests.post(url, headers=headers, data=json.dumps(data))
+
+       if response.status_code == 200:
+           response_json = response.json()
+           # Adjust the following line based on the actual structure of the API response
+           click.echo(response_json['choices'][0]['message']['content'])
+       else:
+           raise click.ClickException(f'Error: {response.status_code} - {response.text}')
+
+   if __name__ == '__main__':
+       call_mistral_ai()
+   ```
+
+3. **Content of `mistral_ai/__init__.py`**:
+   ```python
+   from .main import call_mistral_ai
+   ```
+
+4. **Content of `pyproject.toml`**:
+   ```toml
+   [build-system]
+   requires = ["setuptools>=42", "wheel"]
+   build-backend = "setuptools.build_meta"
+
+   [project]
+   name = "mistral_ai"
+   version = "0.1.0"
+   description = "A package to call the Mistral AI API"
+   readme = "README.md"
+   requires-python = ">=3.6"
+   dependencies = [
+       "click",
+       "requests"
+   ]
+
+   [project.scripts]
+   mistral-ai = "mistral_ai.main:call_mistral_ai"
+
+   [tool.setuptools]
+   packages = ["mistral_ai"]
+   ```
+
+5. **Content of `README.md`**:
+   ```markdown
+   # Mistral AI CLI
+
+   This package provides a command-line interface to call the Mistral AI API.
+
+   ## Installation
+
+   ```sh
+   pip install .
+   ```
+
+   ## Usage
+
+   ```sh
+   export MISTRAL_AI_KEY=your_api_key
+   mistral-ai "Your prompt here"
+   ```
+   ```
+
+6. **Testing (Optional)**:
+   You can add tests in the `tests` directory. For example, `tests/test_main.py`:
+   ```python
+   import unittest
+   from unittest.mock import patch
+   from mistral_ai.main import call_mistral_ai
+
+   class TestMistralAI(unittest.TestCase):
+       @patch('mistral_ai.main.requests.post')
+       def test_call_mistral_ai(self, mock_post):
+           mock_post.return_value.status_code = 200
+           mock_post.return_value.json.return_value = {
+               'choices': [{'message': {'content': 'Mock response'}}]
+           }
+           with self.assertRaises(SystemExit) as cm:
+               call_mistral_ai(['Hello', 'world'])
+           self.assertEqual(cm.exception.code, 0)
+
+   if __name__ == '__main__':
+       unittest.main()
+   ```
+
+7. **Building and Installing the Package**:
+   ```sh
+   pip install build
+   python -m build
+   pip install .
+   ```
+
+After following these steps, you should have a Python package that can be installed using `pip` and provides a command-line interface to call the Mistral AI API.

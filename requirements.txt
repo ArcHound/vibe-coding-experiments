@@ -4,3 +4,10 @@ pandas
 tqdm
 requests
 mistralai
+blinker
+Flask
+itsdangerous
+Jinja2
+MarkupSafe
+pygame
+Werkzeug

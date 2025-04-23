@@ -1,3 +1,6 @@
+Please take the following script:
+
+```python
 #!/usr/bin/env python3
 
 import os
@@ -7,8 +10,7 @@ import json
 
 @click.command()
 @click.argument('prompt', nargs=-1)
-@click.option('--model', default='mistral-small-latest', help='The model to use for the AI call.')
-def call_mistral_ai(prompt, model):
+def call_mistral_ai(prompt):
     """Call the Mistral AI API with the given prompt."""
     api_key = os.getenv('MISTRAL_AI_KEY')
     if not api_key:
@@ -23,7 +25,7 @@ def call_mistral_ai(prompt, model):
         'Content-Type': 'application/json'
     }
     data = {
-        'model': model,
+        'model': 'mistral-small-latest',  # Replace with the actual model name if different
         'messages': [{'role': 'user', 'content': prompt}]
         # Add any other parameters required by the API here
     }
@@ -39,4 +41,6 @@ def call_mistral_ai(prompt, model):
 
 if __name__ == '__main__':
     call_mistral_ai()
-      
+```
+
+And create a python package installable by pip from it, use pyproject.toml
