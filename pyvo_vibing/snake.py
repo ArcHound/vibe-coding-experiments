@@ -1,4 +1,3 @@
-
 import pygame
 import time
 import random
@@ -17,7 +16,7 @@ dis_width = 800
 dis_height = 600
 
 dis = pygame.display.set_mode((dis_width, dis_height))
-pygame.display.set_caption('Snake Game')
+pygame.display.set_caption("Snake Game")
 
 clock = pygame.time.Clock()
 
@@ -27,13 +26,16 @@ snake_speed = 15
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
 
+
 def our_snake(snake_block, snake_list):
     for x in snake_list:
         pygame.draw.rect(dis, blue, [x[0], x[1], snake_block, snake_block])
 
+
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width / 6, dis_height / 3])
+
 
 def gameLoop():
     game_over = False
@@ -114,6 +116,5 @@ def gameLoop():
     pygame.quit()
     quit()
 
+
 gameLoop()
-
-
