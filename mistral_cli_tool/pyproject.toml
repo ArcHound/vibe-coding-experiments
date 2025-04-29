@@ -1,23 +1,20 @@
-[build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "mistral_cli_tool"
+name = "mistral-cli-tool"
 version = "0.1.0"
-description = "A package to call the Mistral AI API"
+description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.6"
-license = "MIT"
+requires-python = ">=3.10"
 dependencies = [
     "click",
-    "python-dotenv",
+    "fastmcp>=2.2.5",
     "mistralai",
+    "python-dotenv",
+    "requests>=2.32.3",
 ]
 
 [project.scripts]
-mistral-cli-tool = "src.main:main"
+mistral_cli_tool = "mistral_cli_tool.main:main"
 
-[tool.setuptools]
-packages = ["src"]
-
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

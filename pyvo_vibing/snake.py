@@ -54,7 +54,6 @@ def gameLoop():
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
 
     while not game_over:
-
         while game_close == True:
             dis.fill(gray)
             message("You Lost! Press Q-Quit or C-Play Again", red)
