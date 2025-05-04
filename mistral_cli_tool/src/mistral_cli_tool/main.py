@@ -28,7 +28,7 @@ from mistralai.models.function import Function
 from mistralai.models.toolmessage import ToolMessage
 from mistralai.models.usermessage import UserMessage
 
-load_dotenv()
+load_dotenv(".env")
 
 logging.basicConfig(
     level=logging.ERROR,

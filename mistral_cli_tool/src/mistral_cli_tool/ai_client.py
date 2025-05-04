@@ -16,7 +16,10 @@ from mistralai.models.usermessage import UserMessage
 
 from fastmcp import Client
 from mistral_cli_tool.mcp_server import mcp_server
+
+# mcp_server = "http://localhost:8000/sse"
 from mistral_cli_tool import LOGGER_NAME
+from mcp.types import Tool
 
 import asyncio
 from asyncio import Queue
@@ -49,6 +52,7 @@ class AIClient:
 
             # List available tools
             self.mcp_tools = await client.list_tools()
+            log.info(type(self.mcp_tools[0]))
             self.tools = [tool_mcp_to_mistral(tool) for tool in self.mcp_tools]
             log.info(self.tools)
 
@@ -129,14 +133,20 @@ class AIClient:
         await self.output_queue.put(chat_response.choices[0].message.content)
 
 
-def tool_mcp_to_mistral(tool):
+def tool_mcp_to_mistral(tool: Tool):
     json_tool = vars(tool)
     mistral_tool = dict()
+    # might as well throw an exception if we don't have a name and a description
     mistral_tool["name"] = json_tool["name"]
     mistral_tool["description"] = json_tool["description"]
+    # inputSchema maps to parameters, but there are optional fields
     mistral_tool["parameters"] = dict()
-    mistral_tool["parameters"]["properties"] = json_tool["inputSchema"]["properties"]
-    mistral_tool["parameters"]["required"] = json_tool["inputSchema"]["required"]
+    mistral_tool["parameters"]["properties"] = json_tool["inputSchema"].get(
+        "properties", {}
+    )
+    mistral_tool["parameters"]["required"] = json_tool["inputSchema"].get(
+        "required", []
+    )
     return {"type": "function", "function": mistral_tool}
 
 
